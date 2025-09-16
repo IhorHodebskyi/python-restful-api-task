@@ -1,18 +1,26 @@
-from typing import Union
-
+from src.routes.tasks import router as tasks_router
 from fastapi import FastAPI
+from src.database.storage import storage
+from fastapi.exceptions import HTTPException
+import logging
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
-
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
+app.include_router(prefix="/api", tags=["tasks"], router=tasks_router)
 
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+@app.get("/api/healthchecker")
+async def health_check():
+    try:
+        result = storage.get_tasks_count()
+        if result is None:
+            raise HTTPException(status_code=500, detail="Storage is not initialized")
+        return {"status": "200", "message": "Service is running with in-memory storage"}
+    except Exception as e:
+        logger.error(f"Health check failed: {e}")
+        raise HTTPException(status_code=500, detail="Health check failed")
 
 
 if __name__ == "__main__":
