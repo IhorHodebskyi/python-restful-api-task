@@ -1,0 +1,19 @@
+[project]
+name = "python-restful-api-task"
+version = "0.1.0"
+description = ""
+authors = [
+    { name = "ihor", email = "i0962112822@gmail.com" }
+]
+license = { text = "MIT" }
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi (>=0.116.1,<0.117.0)",
+    "uvicorn[standard] (>=0.35.0,<0.36.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
