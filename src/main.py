@@ -1,14 +1,18 @@
-from src.routes.tasks import router as tasks_router
 from fastapi import FastAPI
-from src.database.storage import storage
 from fastapi.exceptions import HTTPException
 import logging
+
+from src.routes.tasks import router as tasks_router
+from src.routes.users import router as users_router
+from src.database.storage import storage
+
 
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
 app.include_router(prefix="/api", tags=["tasks"], router=tasks_router)
+app.include_router(prefix="/api", tags=["users"], router=users_router)
 
 
 @app.get("/api/healthchecker")

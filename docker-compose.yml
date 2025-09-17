@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  fastapi:
+    build: .
+    container_name: fastapi_app
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - ./data:/data
+    depends_on:
+      - redis
+
+  celery:
+    build:
+      context: .
+      dockerfile: Dockerfile.celery
+    container_name: celery_worker
+    volumes:
+      - .:/app
+      - ./data:/data
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7
+    container_name: redis_broker
+    ports:
+      - "6379:6379"

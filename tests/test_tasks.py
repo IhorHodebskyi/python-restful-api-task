@@ -1,7 +1,7 @@
 import pytest
 from httpx import AsyncClient, ASGITransport
 
-from main import app
+from src.main import app
 from src.database.storage import storage
 from src.conf.messages import (task_not_found, task_deleted)
 
