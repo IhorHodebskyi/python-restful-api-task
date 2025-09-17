@@ -43,12 +43,12 @@ class InMemoryStorage:
                 return task
         return None
 
-    def delete_task(self, task_id: int) -> bool:
+    def delete_task(self, task_id: int) -> Optional[TaskResponseShema]:
         for task in self.tasks:
             if task.id == task_id:
                 self.tasks.remove(task)
-                return True
-        return False
+                return task
+        return None
 
 
 storage = InMemoryStorage()

@@ -1,9 +1,9 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Body
 from fastapi.exceptions import HTTPException
 from typing import List, Dict
 
-from src.entity.models import TaskResponseShema, TaskCreateShema
-
+from src.entity.models import TaskResponseShema, TaskCreateShema, TaskUpdateShema
+from src.conf.messages import (task_not_found, task_deleted)
 from src.database.storage import storage
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
@@ -13,7 +13,7 @@ router = APIRouter(prefix="/tasks", tags=["tasks"])
 def get_tasks():
     result = storage.get_tasks()
     if result is None:
-        raise HTTPException(status_code=404, detail="Tasks not found")
+        raise HTTPException(status_code=404, detail=task_not_found)
     return result
 
 
@@ -21,7 +21,7 @@ def get_tasks():
 def create_task(body: TaskCreateShema, ):
     result = storage.create_task(body)
     if result is None:
-        raise HTTPException(status_code=404, detail="Task not found")
+        raise HTTPException(status_code=404, detail=task_not_found)
     return result
 
 
@@ -29,21 +29,21 @@ def create_task(body: TaskCreateShema, ):
 def get_task_by_id(task_id: int):
     result = storage.get_task_by_id(task_id)
     if result is None:
-        raise HTTPException(status_code=404, detail="Task not found")
+        raise HTTPException(status_code=404, detail=task_not_found)
     return result
 
 
 @router.put("/{task_id}", response_model=TaskResponseShema)
-def update_task(task_id: int):
-    result = storage.update_task(task_id)
+def update_task(task_id: int, task_data: TaskUpdateShema = Body(...)):
+    result = storage.update_task(task_id, task_data)
     if result is None:
-        raise HTTPException(status_code=404, detail="Task not found")
+        raise HTTPException(status_code=404, detail=task_not_found)
     return result
 
 
 @router.delete("/{task_id}", response_model=Dict[str, str])
 def delete_task(task_id: int):
     result = storage.delete_task(task_id)
-    if result is None:
-        raise HTTPException(status_code=404, detail="Task not found")
-    return {"message": "Task deleted successfully"}
+    if not result:
+        raise HTTPException(status_code=404, detail=task_not_found)
+    return {"message": task_deleted}
