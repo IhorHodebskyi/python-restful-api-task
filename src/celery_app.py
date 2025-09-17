@@ -3,6 +3,8 @@ import requests
 import csv
 import os
 
+from src.ml.ml_service import predictor
+
 celery_app = Celery(
     "worker",
     broker="redis://redis:6379/0",
@@ -30,3 +32,14 @@ def fetch_and_save_users():
             })
 
     return f"Saved {len(users)} users to {file_path}"
+
+@celery_app.task
+def train_ml_model():
+    try:
+        success = predictor.train_model()
+        if success:
+            return {"status": "success", "message": "Model trained successfully"}
+        else:
+            return {"status": "error", "message": "Model training failed"}
+    except Exception as e:
+        return {"status": "error", "message": f"Training error: {str(e)}"}
